@@ -1,0 +1,113 @@
+@import "tailwindcss";
+
+@theme {
+  --color-dark: #0f0f0f;
+  --color-dark-lighter: #111827;
+  --color-dark-card: #1e1e1e;
+  --color-primary-start: #6366f1;
+  --color-primary-end: #8b5cf6;
+
+  --font-sans: "Inter", "Poppins", sans-serif;
+
+  /* Fluid Typography Tokens */
+  --text-fluid-h1: clamp(1.75rem, 3vw + 1rem, 3rem);
+  --text-fluid-body: clamp(0.9rem, 0.35vw + 0.8rem, 1.15rem);
+  --text-fluid-input: clamp(0.9rem, 0.4vw + 0.75rem, 1.1rem);
+}
+
+@layer base {
+  body {
+    background-color: var(--color-dark);
+    color: white;
+    font-family: var(--font-sans);
+    font-size: var(--text-fluid-body);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h3 {
+    font-size: var(--text-fluid-h1) !important;
+    line-height: 1.2;
+    letter-spacing: -0.03em;
+    font-weight: 800;
+  }
+}
+
+@layer components {
+  .sidebar-item {
+    @apply flex flex-col p-3 rounded-lg cursor-pointer transition-all duration-200 hover:bg-white/5 border border-transparent;
+  }
+
+  .sidebar-item-active {
+    @apply bg-white/10 border-white/10 shadow-[0_0_15px_rgba(255,255,255,0.05)];
+  }
+
+  .chat-bubble-user {
+    @apply bg-dark-card border border-white/5 p-4 rounded-2xl max-w-[80%];
+    font-size: var(--text-fluid-body);
+  }
+
+  .chat-bubble-ai {
+    @apply relative bg-dark-lighter p-4 rounded-2xl max-w-[80%] border-l-4 border-indigo-500 shadow-xl;
+    font-size: var(--text-fluid-body);
+  }
+
+  .suggestion-chip {
+    @apply px-3 py-2 sm:px-4 sm:py-3 bg-white/5 border border-white/10 rounded-2xl hover:bg-white/10 cursor-pointer transition-all text-[11px] sm:text-sm font-semibold;
+  }
+
+  .glass-input {
+    @apply bg-white/[0.03] border border-white/10 backdrop-blur-xl focus-within:border-indigo-500/50 focus-within:shadow-[0_0_30px_rgba(99,102,241,0.1)] transition-all;
+  }
+}
+
+textarea {
+  font-size: var(--text-fluid-input) !important;
+}
+
+/* Logo Shimmer Effect */
+.logo-shimmer {
+  background: linear-gradient(to right,
+      #ffffff 20%,
+      #818cf8 40%,
+      #818cf8 60%,
+      #ffffff 80%);
+  background-size: 200% auto;
+  color: #000;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shine 5s linear infinite;
+}
+
+@keyframes shine {
+  to {
+    background-position: 200% center;
+  }
+}
+
+/* Custom Animations */
+@keyframes typing {
+
+  0%,
+  100% {
+    opacity: 0.2;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+.typing-dot {
+  animation: typing 1s infinite;
+}
+
+/* Hide scrollbar but keep functionality */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
