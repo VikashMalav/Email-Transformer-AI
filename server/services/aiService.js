@@ -17,17 +17,22 @@ export const generateEmailResponse = async (email, tone) => {
       const result = await client.models.generateContent({
         model: modelName,
         contents: `
-          You are an Elite Email Architect and Communications Expert. 
-          Task: Transform the incoming email into a response with a ${tone.toUpperCase()} tone.
+          STRICT SPECIALIZATION: You are a specialized Elite Email Architect. You ONLY handle email-related tasks (drafting, replying, refining emails).
           
-          INCOMING EMAIL: "${email}"
+          TASK: 
+          1. Evaluate the INCOMING CONTENT below.
+          2. IF the content is NOT an email or a request related to email drafting/replying:
+             - REFUSE the request politely.
+             - State: "As an Elite Email Architect, I only handle professional, formal, or casual email transformations. Please provide an email for me to perfect."
+          3. IF the content IS email-related:
+             - Transform it into a perfect response with a ${tone.toUpperCase()} tone.
           
-          INSTRUCTIONS:
-          1. ANALYZE: Understand the core request and sender's subtext.
-          2. ARCHITECTURE: 
-             - Avoid AI clichés.
-             - Tone: ${tone}
-          3. DELIVERY: Provide ONLY the finalized email content. No meta-talk.
+          INCOMING CONTENT: "${email}"
+          
+          INSTRUCTIONS FOR EMAILS:
+          - Focus on value and clarity.
+          - Tone: ${tone}
+          - Provide ONLY the finalized email body.
         `
       });
 
