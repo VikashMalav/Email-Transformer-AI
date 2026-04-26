@@ -117,9 +117,9 @@ textarea {
 }
 
 /* Markdown Styling */
-.markdown-container h1 { @apply text-2xl font-bold mb-4 mt-2 text-white; }
-.markdown-container h2 { @apply text-xl font-bold mb-3 mt-2 text-white; }
-.markdown-container h3 { @apply text-lg font-bold mb-2 mt-1 text-white; }
+.markdown-container h1 { @apply text-xl font-bold mb-3 mt-1 text-white; }
+.markdown-container h2 { @apply text-lg font-bold mb-2 mt-1 text-white; }
+.markdown-container h3 { @apply text-base font-bold mb-1 mt-1 text-white; }
 .markdown-container p { @apply mb-4 leading-relaxed; }
 .markdown-container ul { @apply list-disc ml-5 mb-4 space-y-1; }
 .markdown-container ol { @apply list-decimal ml-5 mb-4 space-y-1; }
