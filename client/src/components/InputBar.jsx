@@ -20,6 +20,12 @@ const InputBar = ({
             rows={1}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                onGenerate();
+              }
+            }}
             placeholder="Paste your email here..."
             className="flex-1 bg-transparent py-3 text-sm focus:outline-none no-scrollbar max-h-48"
           />

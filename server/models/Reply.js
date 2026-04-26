@@ -1,13 +1,14 @@
 import mongoose from 'mongoose';
 
 const replySchema = new mongoose.Schema({
-  originalEmail: {
+  messages: [{
+    role: { type: String, enum: ['user', 'assistant'], required: true },
+    content: { type: String, required: true },
+    timestamp: { type: Date, default: Date.now }
+  }],
+  title: {
     type: String,
-    required: true,
-  },
-  generatedReply: {
-    type: String,
-    required: true,
+    default: 'New Conversation'
   },
   tone: {
     type: String,

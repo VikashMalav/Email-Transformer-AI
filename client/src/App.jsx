@@ -11,10 +11,10 @@ import InputBar from './components/InputBar';
 function App() {
   // State Management
   const [email, setEmail] = useState('');
-  const [displayedEmail, setDisplayedEmail] = useState('');
+  const [messages, setMessages] = useState([]);
   const [tone, setTone] = useState('professional');
-  const [generatedReply, setGeneratedReply] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [loadingSessionId, setLoadingSessionId] = useState(null);
   const [history, setHistory] = useState([]);
   
   // UI State
@@ -41,59 +41,61 @@ function App() {
   const fetchHistory = async () => {
     try {
       const { data } = await api.get('/replies');
-      // The controller now returns { success: true, data: [...] }
       setHistory(data.data || []);
-    } catch (e) { 
-      // Handled globally by interceptor
-    }
+    } catch (e) { }
   };
 
   const handleGenerate = useCallback(async () => {
-    const emailToProcess = email.trim() || displayedEmail.trim();
+    const emailToProcess = email.trim();
     if (!emailToProcess || isLoading) return;
 
     const loadingToast = toast.loading('Consulting Elite AI Architect...');
+    
+    // Optimistic UI: Add user message immediately
+    const userMsg = { role: 'user', content: emailToProcess };
+    setMessages(prev => [...prev, userMsg]);
     setIsLoading(true);
-    setGeneratedReply('');
-    setDisplayedEmail(emailToProcess);
+    setLoadingSessionId(activeSession || 'new'); // Track context
     setEmail(''); 
     
     try {
-      const { data } = await api.post('/generate-reply', { email: emailToProcess, tone });
-      const reply = data.generatedReply;
-      setGeneratedReply(reply);
-      
-      await api.post('/save-reply', {
-        originalEmail: emailToProcess,
-        generatedReply: reply,
-        tone
+      const { data } = await api.post('/generate-reply', { 
+        email: emailToProcess, 
+        tone,
+        sessionId: activeSession 
       });
+      
+      if (data.messages) {
+        setMessages(data.messages);
+      } else {
+        setMessages(prev => [...prev, { role: 'assistant', content: data.generatedReply }]);
+      }
+      
+      if (data.sessionId) setActiveSession(data.sessionId);
       
       toast.success('Reply perfected!', { id: loadingToast });
       fetchHistory();
     } catch (e) {
-      // Capture the message from the interceptor or fallback
       const errorMsg = e.response?.data?.message || 'AI Architecture failed to respond.';
       toast.error(errorMsg, { id: loadingToast });
     } finally {
       setIsLoading(false);
+      setLoadingSessionId(null);
     }
-  }, [email, displayedEmail, tone, isLoading]);
+  }, [email, tone, isLoading, activeSession]);
 
   const loadSession = (item) => {
     setEmail('');
-    setDisplayedEmail(item.originalEmail);
-    setGeneratedReply(item.generatedReply);
+    setMessages(item.messages || []);
     setTone(item.tone);
     setActiveSession(item._id);
     setIsSidebarOpen(false);
-    toast.success('Archived session loaded');
+    toast.success('Conversation loaded');
   };
 
   const newSession = () => {
     setEmail('');
-    setDisplayedEmail('');
-    setGeneratedReply('');
+    setMessages([]);
     setActiveSession(null);
     setIsSidebarOpen(false);
     if (textareaRef.current) textareaRef.current.focus();
@@ -125,7 +127,7 @@ function App() {
   };
 
   return (
-    <div className="flex h-screen bg-dark overflow-hidden font-sans">
+    <div className="flex h-dvh bg-dark overflow-hidden font-sans">
       <Toaster 
         position="top-center"
         toastOptions={{
@@ -157,13 +159,14 @@ function App() {
           showToneDropdown={showToneDropdown}
           setShowToneDropdown={setShowToneDropdown}
           onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
+          isLoading={isLoading && (loadingSessionId === activeSession || (!activeSession && loadingSessionId === 'new'))}
         />
 
         <div className="flex-1 overflow-y-auto no-scrollbar p-4 md:p-10">
           <ChatArea 
-            displayedEmail={displayedEmail}
-            generatedReply={generatedReply}
-            isLoading={isLoading}
+            messages={messages}
+            isLoading={isLoading && (loadingSessionId === activeSession || (!activeSession && loadingSessionId === 'new'))}
+            activeSession={activeSession}
             tone={tone}
             onSuggestion={setEmail}
             onCopy={(text) => { 
