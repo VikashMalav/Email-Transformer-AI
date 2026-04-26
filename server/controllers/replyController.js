@@ -53,9 +53,25 @@ export async function generateReply(req, res) {
     });
   } catch (error) {
     console.error('[Controller] Generation Error:', error);
-    return res.status(500).json({ 
+    
+    let message = 'AI Architecture failed to respond. Please check your connection.';
+    let status = 500;
+
+    // Detect if it's a Quota/Rate Limit error
+    if (error.status === 429 || error.message?.includes('429') || error.message?.includes('quota')) {
+      status = 429;
+      if (error.message?.includes('free_tier_requests')) {
+        message = "Free tier limit reached. Please wait a moment before trying again.";
+      } else if (error.message?.includes('daily')) {
+        message = "Daily AI generation limit reached. Please come back tomorrow!";
+      } else {
+        message = "AI Quota temporary exhausted. Please try again shortly.";
+      }
+    }
+
+    return res.status(status).json({ 
       success: false, 
-      message: 'AI Architecture failed to respond.', 
+      message, 
       error: error.message 
     });
   }
