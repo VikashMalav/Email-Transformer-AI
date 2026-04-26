@@ -9,7 +9,7 @@ const client = new GoogleGenAI({ apiKey: (process.env.GOOGLE_API_KEY || "").trim
  * This decoupled logic allows for easy testing and model switching.
  */
 export const generateEmailResponse = async (history, message, tone) => {
-  const modelsToTry = ["gemini-flash-latest", "gemini-2.0-flash", "gemini-1.5-flash"];
+  const modelsToTry = ["gemini-3.1-flash-lite-preview", "gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"];
   let lastError = null;
 
   // Format system instruction for the current context
