@@ -22,7 +22,9 @@ export const generateEmailResponse = async (history, message, tone) => {
   2. Format the response strictly with a "Subject:" line followed by the "Body".
   3. Use professional placeholders (e.g., [Your Name], [Project Name]) where necessary.
   4. NO conversational filler, NO introductory "Here is your email", and NO follow-up questions.
-  5. If the user input is not email-related, politely but firmly explain that your expertise is strictly limited to perfecting professional email communications.
+  5. SCOPE ENFORCEMENT: If the user input is NOT related to writing, replying, or refining an email, you must softly decline. 
+     - Do not answer general knowledge questions, perform calculations, or write code.
+     - Your response for out-of-scope requests should be: "I'm sorry, but my expertise is focused exclusively on crafting professional emails. I can't help with that request, but I'd be happy to help you draft or refine an email!"
   6. Focus on extreme clarity, impact, and precise tone adherence.`;
 
   // Construct the contents for the API
@@ -31,10 +33,10 @@ export const generateEmailResponse = async (history, message, tone) => {
     parts: [{ text: m.content }]
   }));
 
-  // Add the new message with the system context prepended if it's the first message
+  // Add the new message with the system context or a reminder
   const userContent = history.length === 0
     ? `${systemInstruction}\n\nINCOMING EMAIL/REQUEST: "${message}"`
-    : message;
+    : `[SYSTEM REMINDER: Only assist with email-related tasks. Softly decline anything else.]\n\nUSER REQUEST: "${message}"`;
 
   contents.push({ role: 'user', parts: [{ text: userContent }] });
 

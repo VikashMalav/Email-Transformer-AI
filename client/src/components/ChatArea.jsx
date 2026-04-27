@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { User, Sparkles, Copy, RefreshCw, Mail } from 'lucide-react';
 import { motion } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
@@ -13,6 +13,16 @@ const ChatArea = ({
   onCopy,
   onRetry
 }) => {
+  const messagesEndRef = useRef(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'auto' });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages, isLoading, activeSession]);
+
   if (messages.length === 0 && !isLoading) {
     return (
       <div className="min-h-full flex flex-col items-center justify-center text-center animate-in fade-in duration-1000 px-6">
@@ -89,6 +99,9 @@ const ChatArea = ({
           </div>
         </motion.div>
       )}
+      
+      {/* Invisible element to anchor the scroll */}
+      <div ref={messagesEndRef} />
     </div>
   );
 };
